@@ -10,6 +10,7 @@ const { validateUser, validateLogin } = require('../validateObject')
 const envConfigs = require('../database/config/config');
 const env = process.env.NODE_ENV || 'development';
 const config = envConfigs[env];
+
 let arrayOfModels
 try {
     const connect = async () => {
@@ -19,6 +20,7 @@ try {
 } catch (error) {
 
 }
+
 router.get('/me', auth, asyncHandler(async (req, res) => {
     res.send("user");
 }));

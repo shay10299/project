@@ -38,5 +38,22 @@ const validateLogin = (userLogin) => {
     return schema.validate(userLogin);
 
 }
+const validateParty = (party) => {
+    const schema = Joi.object({
+        PartyName: Joi.string()
+            .required(),
+        date: Joi.date()
+            .required(),
+        MaxParticipants: Joi.number()
+            .required(),
+        NumberOfParticipants: Joi.number()
+            .required(),
+        hour: Joi.number()
+            .required()
 
-module.exports = { validateUser, validateLogin }
+    })
+
+    return schema.validate(party);
+
+}
+module.exports = { validateUser, validateLogin, validateParty }

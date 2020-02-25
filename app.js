@@ -5,7 +5,7 @@ const auth = require('./middleware/auth')
 const app = express()
 const user = require('./routes/user');
 const party = require('./routes/party');
-
+const EnterPartyReq = require('./routes/enterPartyRequest')
 require('./startup/logging')
 
 
@@ -13,7 +13,7 @@ require('./startup/logging')
 app.use(express.json());
 app.use('/api/user', user);
 app.use('/api/party', party);
-
+app.use('/api/EnterPartyReq', EnterPartyReq)
 app.use(error);
 
 

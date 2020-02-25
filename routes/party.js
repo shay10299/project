@@ -35,7 +35,7 @@ router.post('/create', auth, asyncHandler(async (req, res) => {
             }
         } catch (e) {
             winston.error(e)
-            return res.status(400).send("Something failed")
+            return res.status(500).send("Something failed")
 
         }
     }
@@ -46,12 +46,15 @@ router.post('/create', auth, asyncHandler(async (req, res) => {
 router.get('/myParties', auth, asyncHandler(async (req, res) => {
     try {
         const parties = await arrayOfModels[1].findAll({ where: { PartyOwnerID: req.user._id } });
-        if (parties) {
+        if (parties.length > 0) {
             res.status(200).send(parties)
+        }
+        else {
+            res.status(404).send("No parties found")
         }
     } catch (e) {
         winston.error(e)
-        return res.status(400).send("Something failed")
+        return res.status(500).send("Something failed")
     }
 
 
@@ -59,12 +62,15 @@ router.get('/myParties', auth, asyncHandler(async (req, res) => {
 router.get('/allParties', auth, asyncHandler(async (req, res) => {
     try {
         const parties = await arrayOfModels[1].findAll();
-        if (parties) {
+        if (parties.length > 0) {
             res.status(200).send(parties)
+        }
+        else {
+            res.status(404).send("No parties found")
         }
     } catch (e) {
         winston.error(e)
-        return res.status(400).send("Something failed")
+        return res.status(500).send("Something failed")
     }
 
 }))

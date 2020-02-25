@@ -56,4 +56,15 @@ const validateParty = (party) => {
     return schema.validate(party);
 
 }
-module.exports = { validateUser, validateLogin, validateParty }
+const validateEnterPartyReq = (partyReq) => {
+    const schema = Joi.object({
+        PartyID: Joi.number()
+            .required(),
+        PartyOwnerID: Joi.number()
+            .required()
+    })
+
+    return schema.validate(partyReq);
+
+}
+module.exports = { validateUser, validateLogin, validateParty, validateEnterPartyReq }

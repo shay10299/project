@@ -12,6 +12,8 @@ const connectToSequlize = async () => {
     arrayOfModels[0] = require("../database/models/user")(sequelize, Sequelize)
     arrayOfModels[1] = require("../database/models/party")(sequelize, Sequelize)
     arrayOfModels[2] = require("../database/models/enterpartyrequest")(sequelize, Sequelize)
+    arrayOfModels[3] = require("../database/models/participants")(sequelize, Sequelize)
+
 
     try {
         await sequelize.authenticate();

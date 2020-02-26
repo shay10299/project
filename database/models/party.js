@@ -4,7 +4,6 @@ module.exports = (sequelize, DataTypes) => {
     PartyName: DataTypes.STRING,
     PartyOwnerID: DataTypes.INTEGER,
     date: DataTypes.DATE,
-    MaxParticipants: DataTypes.INTEGER,
     NumberOfParticipants: DataTypes.INTEGER,
     hour: DataTypes.INTEGER
   }, {});

@@ -24,6 +24,10 @@ try {
 router.get('/me', auth, asyncHandler(async (req, res) => {
     res.send("user");
 }));
+
+/**
+ * Login user and creates a jwt token for user
+ */
 router.post('/login', asyncHandler(async (req, res) => {
     const { error } = validateLogin(req.body)
     if (error)
@@ -41,6 +45,11 @@ router.post('/login', asyncHandler(async (req, res) => {
 
     res.status(200).send(token)
 }));
+
+
+/**
+ * Register user and creates a token 
+ */
 router.post('/register', asyncHandler(async (req, res) => {
     const { error } = validateUser(req.body)
 
@@ -78,4 +87,5 @@ router.post('/register', asyncHandler(async (req, res) => {
     }
 
 }))
+
 module.exports = router; 

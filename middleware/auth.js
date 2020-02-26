@@ -2,6 +2,10 @@ const jwt = require('jsonwebtoken');
 const envConfigs = require('../database/config/config');
 const env = process.env.NODE_ENV || 'development';
 const config = envConfigs[env];
+
+/**
+ * Authencticating users middleware
+ */
 module.exports = function (req, res, next) {
 
   const token = req.header('x-auth-token');

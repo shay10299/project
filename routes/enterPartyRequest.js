@@ -17,6 +17,9 @@ try {
 
 }
 
+/**
+ * Creates a new party request for user
+ */
 router.post('/create', auth, asyncHandler(async (req, res) => {
     const { error } = validateEnterPartyReq(req.body)
 
@@ -43,6 +46,9 @@ router.post('/create', auth, asyncHandler(async (req, res) => {
     return res.status(400).send("invalid input")
 }))
 
+/**
+ * Returns user's enter party requests 
+ */
 router.get('/myRequests', auth, asyncHandler(async (req, res) => {
     try {
         const requests = await arrayOfModels[2].findAll({ where: { UserID: req.user._id } });
@@ -59,6 +65,11 @@ router.get('/myRequests', auth, asyncHandler(async (req, res) => {
 
 
 }))
+
+
+/**
+ * Returns party owner requests to confirm
+ */
 router.get('/myRequestsToConfirm', auth, asyncHandler(async (req, res) => {
     try {
         const requests = await arrayOfModels[2].findAll({ where: { PartyOwnerID: req.user._id } });
@@ -75,7 +86,33 @@ router.get('/myRequestsToConfirm', auth, asyncHandler(async (req, res) => {
 
 
 }))
+
+/**
+ * Confirm party requests from users
+ */
 router.post('/confirm', auth, asyncHandler(async (req, res) => {
-    //will edit when starting client side
+    try {
+        const participantToConfirm = await arrayOfModels[2].findOne({ where: { PartyOwnerID: req.user._id, PartyID: req.body.PartyID, UserID: req.body.participantID } });
+        participantToConfirm.confirmedByPartyOwner = true
+
+        const party = await arrayOfModels[1].findOne({ where: { id: req.body.PartyID } })
+        party.NumberOfParticipants++
+
+        await arrayOfModels[3].create({
+            PartyID: party.id,
+            ParticipantID: req.body.participantID
+        });
+
+        await participantToConfirm.destroy()
+        await party.save()
+        await participantToConfirm.save()
+
+        res.status(200).send(participantToConfirm)
+    } catch (e) {
+        winston.error(e)
+        console.log(e)
+        return res.status(500).send("Something failed")
+    }
+
 }))
 module.exports = router 

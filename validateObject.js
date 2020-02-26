@@ -1,5 +1,6 @@
 const Joi = require('@hapi/joi');
 
+
 const validateUser = (user) => {
     const schema = Joi.object({
         username: Joi.string()
@@ -24,6 +25,7 @@ const validateUser = (user) => {
     return schema.validate(user);
 
 }
+
 const validateLogin = (userLogin) => {
     const schema = Joi.object({
         email: Joi.string()
@@ -38,15 +40,12 @@ const validateLogin = (userLogin) => {
     return schema.validate(userLogin);
 
 }
+
 const validateParty = (party) => {
     const schema = Joi.object({
         PartyName: Joi.string()
             .required(),
         date: Joi.date()
-            .required(),
-        MaxParticipants: Joi.number()
-            .required(),
-        NumberOfParticipants: Joi.number()
             .required(),
         hour: Joi.number()
             .required()
@@ -56,6 +55,7 @@ const validateParty = (party) => {
     return schema.validate(party);
 
 }
+
 const validateEnterPartyReq = (partyReq) => {
     const schema = Joi.object({
         PartyID: Joi.number()

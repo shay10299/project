@@ -10,6 +10,8 @@ const { validateUser, validateLogin } = require('../validateObject')
 const envConfigs = require('../database/config/config');
 const env = process.env.NODE_ENV || 'development';
 const config = envConfigs[env];
+const pg = require('pg');
+delete pg.native;
 
 let arrayOfModels
 try {
@@ -22,7 +24,7 @@ try {
 }
 
 router.get('/me', auth, asyncHandler(async (req, res) => {
-    res.send("user");
+    res.send(req.user);
 }));
 
 /**
@@ -38,7 +40,7 @@ router.post('/login', asyncHandler(async (req, res) => {
         return res.status(404).send("User does not exist")
 
     const confirmPassword = await bcrypt.compare(req.body.password, user.password);
-    if (!confirmPassword) return res.status(400).send('Invalid email or password.');
+    if (!confirmPassword) return res.status(400).send('Invalid email or password');
 
     const token = jwt.sign({ _id: user.id }, config.jwtPrivateKey);
     res.header('x-auth-token', token);
@@ -69,11 +71,12 @@ router.post('/register', asyncHandler(async (req, res) => {
                 try {
                     const token = jwt.sign({ _id: user.id }, config.jwtPrivateKey);
                     res.header('x-auth-token', token);
+                    return res.status(200).send(token)
+
                 } catch (e) {
                     winston.error(e)
                     return res.status(500).send("Error creating token")
                 }
-                return res.status(200).send(token)
             }
 
         } catch (e) {
@@ -84,6 +87,10 @@ router.post('/register', asyncHandler(async (req, res) => {
             return res.status(500).send("Something failed")
 
         }
+    }
+    else {
+        return res.status(400).send("Invalid input")
+
     }
 
 }))

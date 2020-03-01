@@ -5,17 +5,19 @@ const app = express()
 const user = require('./routes/user');
 const party = require('./routes/party');
 const EnterPartyReq = require('./routes/enterPartyRequest')
+const cors = require('cors')
+
 require('./startup/logging')
-const db = require('./database/models/index')
 
 
 app.use(express.json());
+app.use(cors())
 app.use('/api/user', user);
 app.use('/api/party', party);
 app.use('/api/EnterPartyReq', EnterPartyReq)
 app.use(error);
 
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 app.listen(port, () => winston.info(`connected on ${port}`))
 

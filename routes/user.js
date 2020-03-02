@@ -23,8 +23,8 @@ try {
 
 }
 
-router.get('/me', auth, asyncHandler(async (req, res) => {
-    res.send(req.user);
+router.post('/validate', auth, asyncHandler(async (req, res) => {
+    res.status(200).send("User is validated");
 }));
 
 /**

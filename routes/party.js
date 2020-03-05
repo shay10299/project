@@ -45,8 +45,11 @@ router.post('/create', auth, asyncHandler(async (req, res) => {
 
         }
     }
-    console.log(error)
-    return res.status(400).send("invalid input")
+    else {
+        console.log(error)
+        return res.status(400).send("Invalid input")
+    }
+
 }))
 
 /**

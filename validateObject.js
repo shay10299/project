@@ -48,7 +48,7 @@ const validateParty = (party) => {
         date: Joi.date()
             .required(),
         hour: Joi.number()
-            .required()
+            .required().min(0).max(24)
 
     })
 

@@ -25,10 +25,15 @@ router.post('/create', auth, asyncHandler(async (req, res) => {
 
     if (!error) {
         try {
+            const party = await arrayOfModels[1].findOne({ where: { id: req.body.PartyID } });
+            if (!party)
+                return res.status(404).send("Party does not exist")
+            if (party.PartyOwnerID === req.user._id)
+                return res.status(404).send("Can't request your party")
             const EnterPartyReq = await arrayOfModels[2].create({
                 PartyID: req.body.PartyID,
                 UserID: req.user._id,
-                PartyOwnerID: req.body.PartyOwnerID,
+                PartyOwnerID: party.PartyOwnerID,
                 requestDate: Date.now()
             });
             if (EnterPartyReq) {

@@ -22,8 +22,12 @@ try {
  */
 router.post('/create', auth, asyncHandler(async (req, res) => {
     const { error } = validateParty(req.body)
+   
     if (!error) {
         try {
+            const parties = await arrayOfModels[1].findAll({ where: { PartyOwnerID: req.user._id, PartyName: req.body.PartyName } });
+            if (parties.length > 0)
+                return res.status(400).send("Party already exists")
             const party = await arrayOfModels[1].create({
                 PartyName: req.body.PartyName,
                 PartyOwnerID: req.user._id,

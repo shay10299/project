@@ -29,12 +29,16 @@ router.post('/create', auth, asyncHandler(async (req, res) => {
             if (!party)
                 return res.status(404).send("Party does not exist")
             if (party.PartyOwnerID === req.user._id)
-                return res.status(404).send("Can't request your party")
+                return res.status(400).send("Can't request your party")
+            const Req = await arrayOfModels[2].findOne({ where: { PartyID: req.body.PartyID } });
+            if (Req)
+                return res.status(400).send("Party already has been requested")
             const EnterPartyReq = await arrayOfModels[2].create({
                 PartyID: req.body.PartyID,
                 UserID: req.user._id,
                 PartyOwnerID: party.PartyOwnerID,
-                requestDate: Date.now()
+                requestDate: Date.now(),
+                confirmedByPartyOwner: false
             });
             if (EnterPartyReq) {
                 return res.status(200).send(EnterPartyReq)
@@ -48,7 +52,7 @@ router.post('/create', auth, asyncHandler(async (req, res) => {
         }
     }
     console.log(error)
-    return res.status(400).send("invalid input")
+    return res.status(400).send("Invalid input")
 }))
 
 /**
@@ -108,7 +112,6 @@ router.post('/confirm', auth, asyncHandler(async (req, res) => {
             ParticipantID: req.body.participantID
         });
 
-        await participantToConfirm.destroy()
         await party.save()
         await participantToConfirm.save()
 

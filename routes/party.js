@@ -5,7 +5,7 @@ const winston = require('winston')
 const connectToDB = require('../startup/connectDB');
 const asyncHandler = require('express-async-handler')
 const { validateParty } = require('../validateObject')
-
+const getUser = require('../functions/getUser')
 
 let arrayOfModels
 try {
@@ -22,7 +22,7 @@ try {
  */
 router.post('/create', auth, asyncHandler(async (req, res) => {
     const { error } = validateParty(req.body)
-   
+
     if (!error) {
         try {
             const parties = await arrayOfModels[1].findAll({ where: { PartyOwnerID: req.user._id, PartyName: req.body.PartyName } });
@@ -134,5 +134,22 @@ router.get('/allParties', auth, asyncHandler(async (req, res) => {
     }
 
 }))
+router.post('/PartyParticipants', auth, asyncHandler(async (req, res) => {
+    try {
+        getUser(arrayOfModels[0], arrayOfModels[3], req.body.PartyID).then((result) => {
+            return res.status(200).send(result)
+        }).catch((e) => {
+            winston.error(e)
+            return res.status(500).send("Something failed")
+        })
+
+    } catch (e) {
+        winston.error(e)
+        console.log(e)
+        return res.status(500).send("Something failed")
+    }
+
+}))
+
 
 module.exports = router 

@@ -4,7 +4,10 @@ const router = express.Router();
 const winston = require('winston')
 const connectToDB = require('../startup/connectDB');
 const asyncHandler = require('express-async-handler')
-const { validateEnterPartyReq } = require('../validateObject')
+const createEnterPartyReq = require('../functions/createEnterPartyReq')
+const getMyRequests = require('../functions/getMyRequests')
+const getMyRequestsToConfirm = require('../functions/getMyRequestsToConfirm')
+const confirmRequest = require('../functions/confirmRequest')
 
 
 let arrayOfModels
@@ -21,56 +24,17 @@ try {
  * Creates a new party request for user
  */
 router.post('/create', auth, asyncHandler(async (req, res) => {
-    const { error } = validateEnterPartyReq(req.body)
 
-    if (!error) {
-        try {
-            const party = await arrayOfModels[1].findOne({ where: { id: req.body.PartyID } });
-            if (!party)
-                return res.status(404).send("Party does not exist")
-            if (party.PartyOwnerID === req.user._id)
-                return res.status(400).send("Can't request your party")
-            const Req = await arrayOfModels[2].findOne({ where: { PartyID: req.body.PartyID } });
-            if (Req)
-                return res.status(400).send("Party already has been requested")
-            const EnterPartyReq = await arrayOfModels[2].create({
-                PartyID: req.body.PartyID,
-                UserID: req.user._id,
-                PartyOwnerID: party.PartyOwnerID,
-                requestDate: Date.now(),
-                confirmedByPartyOwner: false
-            });
-            if (EnterPartyReq) {
-                return res.status(200).send(EnterPartyReq)
+    createEnterPartyReq(arrayOfModels[1], arrayOfModels[2], req, res)
 
-            }
-
-        } catch (e) {
-            winston.error(e)
-            return res.status(500).send("Something failed")
-
-        }
-    }
-    console.log(error)
-    return res.status(400).send("Invalid input")
 }))
 
 /**
  * Returns user's enter party requests 
  */
 router.get('/myRequests', auth, asyncHandler(async (req, res) => {
-    try {
-        const requests = await arrayOfModels[2].findAll({ where: { UserID: req.user._id } });
-        if (requests.length > 0) {
-            res.status(200).send(requests)
-        }
-        else {
-            res.status(404).send("No requests found")
-        }
-    } catch (e) {
-        winston.error(e)
-        return res.status(500).send("Something failed")
-    }
+
+    getMyRequests(arrayOfModels[2], req, res)
 
 
 }))
@@ -80,19 +44,8 @@ router.get('/myRequests', auth, asyncHandler(async (req, res) => {
  * Returns party owner requests to confirm
  */
 router.get('/myRequestsToConfirm', auth, asyncHandler(async (req, res) => {
-    try {
-        const requests = await arrayOfModels[2].findAll({ where: { PartyOwnerID: req.user._id } });
-        if (requests.length > 0) {
-            res.status(200).send(requests)
-        }
-        else {
-            res.status(404).send("No requests found")
-        }
-    } catch (e) {
-        winston.error(e)
-        return res.status(500).send("Something failed")
-    }
 
+    getMyRequestsToConfirm(arrayOfModels[2], req, res)
 
 }))
 
@@ -100,27 +53,8 @@ router.get('/myRequestsToConfirm', auth, asyncHandler(async (req, res) => {
  * Confirm party requests from users
  */
 router.post('/confirm', auth, asyncHandler(async (req, res) => {
-    try {
-        const participantToConfirm = await arrayOfModels[2].findOne({ where: { PartyOwnerID: req.user._id, PartyID: req.body.PartyID, UserID: req.body.participantID } });
-        participantToConfirm.confirmedByPartyOwner = true
 
-        const party = await arrayOfModels[1].findOne({ where: { id: req.body.PartyID } })
-        party.NumberOfParticipants++
-
-        await arrayOfModels[3].create({
-            PartyID: party.id,
-            ParticipantID: req.body.participantID
-        });
-
-        await party.save()
-        await participantToConfirm.save()
-
-        res.status(200).send(participantToConfirm)
-    } catch (e) {
-        winston.error(e)
-        console.log(e)
-        return res.status(500).send("Something failed")
-    }
+    confirmRequest(arrayOfModels[2], arrayOfModels[1], arrayOfModels[3], req, res)
 
 }))
 module.exports = router 

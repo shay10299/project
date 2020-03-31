@@ -9,12 +9,12 @@ module.exports = (sequelize, DataTypes) => {
     IsAdmin: DataTypes.BOOLEAN
   }, {});
   User.associate = function (models) {
-    User.hasMany(models.party, {
+    User.hasMany(models.Party, {
       foreignKey: 'PartyOwnerID',
       as: 'parties',
       onDelete: 'CASCADE',
     });
-    User.hasMany(models.partyrequest, {
+    User.hasMany(models.PartyRequest, {
       foreignKey: 'UserID',
       as: 'Partycreaterequests',
       onDelete: 'CASCADE',

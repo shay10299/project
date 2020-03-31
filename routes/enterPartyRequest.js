@@ -2,30 +2,22 @@ const auth = require('../middleware/auth');
 const express = require('express');
 const router = express.Router();
 const winston = require('winston')
-const connectToDB = require('../startup/connectDB');
 const asyncHandler = require('express-async-handler')
 const createEnterPartyReq = require('../functions/createEnterPartyReq')
 const getMyRequests = require('../functions/getMyRequests')
 const getMyRequestsToConfirm = require('../functions/getMyRequestsToConfirm')
 const confirmRequest = require('../functions/confirmRequest')
+const db = require('../database/models')
+enterPartyReqModel = db['enterpartyrequest']
 
 
-let arrayOfModels
-try {
-    const connect = async () => {
-        arrayOfModels = await connectToDB()
-    }
-    connect()
-} catch (error) {
-
-}
 
 /**
  * Creates a new party request for user
  */
 router.post('/create', auth, asyncHandler(async (req, res) => {
 
-    createEnterPartyReq(arrayOfModels[1], arrayOfModels[2], req, res)
+    createEnterPartyReq(db['Party'], db['enterpartyrequest'], req, res)
 
 }))
 
@@ -34,7 +26,7 @@ router.post('/create', auth, asyncHandler(async (req, res) => {
  */
 router.get('/myRequests', auth, asyncHandler(async (req, res) => {
 
-    getMyRequests(arrayOfModels[2], req, res)
+    getMyRequests(db['enterpartyrequest'], req, res)
 
 
 }))
@@ -45,7 +37,7 @@ router.get('/myRequests', auth, asyncHandler(async (req, res) => {
  */
 router.get('/myRequestsToConfirm', auth, asyncHandler(async (req, res) => {
 
-    getMyRequestsToConfirm(arrayOfModels[2], req, res)
+    getMyRequestsToConfirm(db['enterpartyrequest'], req, res)
 
 }))
 
@@ -54,7 +46,7 @@ router.get('/myRequestsToConfirm', auth, asyncHandler(async (req, res) => {
  */
 router.post('/confirm', auth, asyncHandler(async (req, res) => {
 
-    confirmRequest(arrayOfModels[2], arrayOfModels[1], arrayOfModels[3], req, res)
+    confirmRequest(db['enterpartyrequest'], db['Party'], db['Participants'], req, res)
 
 }))
 module.exports = router 

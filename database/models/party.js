@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
     hour: DataTypes.INTEGER
   }, {});
   Party.associate = function (models) {
-    Party.belongsTo(models.user, {
+    Party.belongsTo(models.User, {
       foreignKey: 'PartyOwnerID',
       as: 'partyowner',
       onDelete: 'CASCADE',

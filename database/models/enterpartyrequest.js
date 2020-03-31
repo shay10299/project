@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
     confirmedByPartyOwner: DataTypes.BOOLEAN
   }, {});
   enterpartyrequest.associate = function (models) {
-    enterpartyrequest.belongsTo(models.user, {
+    enterpartyrequest.belongsTo(models.User, {
       foreignKey: 'UserID',
       as: 'partyowner',
       onDelete: 'CASCADE',

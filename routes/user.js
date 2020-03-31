@@ -2,24 +2,14 @@ const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
 const express = require('express');
 const router = express.Router();
-const connectToDB = require('../startup/connectDB');
 const asyncHandler = require('express-async-handler')
 const pg = require('pg');
 const deleteUserFunc = require('../functions/deleteUserFunc')
 const getAllUsers = require('../functions/getAllUsers')
 const LoginFunc = require('../functions/LoginFunc')
 const registerFunc = require('../functions/registerFunc')
+const db = require('../database/models')
 delete pg.native;
-
-let arrayOfModels
-try {
-    const connect = async () => {
-        arrayOfModels = await connectToDB()
-    }
-    connect()
-} catch (error) {
-
-}
 /**
  * Checks if user is logged in
  */
@@ -38,7 +28,7 @@ router.post('/validateAdmin', [auth, admin], asyncHandler(async (req, res) => {
  * Deleting user
  */
 router.post('/DeleteUser', [auth, admin], asyncHandler(async (req, res) => {
-    deleteUserFunc(arrayOfModels[0], arrayOfModels[1], arrayOfModels[2], arrayOfModels[3], req, res)
+    deleteUserFunc(db['User'], db['Party'], db['enterpartyrequest'], db['Participants'], req, res)
 
 }));
 
@@ -48,7 +38,7 @@ router.post('/DeleteUser', [auth, admin], asyncHandler(async (req, res) => {
  */
 router.get('/AllUsers', [auth, admin], asyncHandler(async (req, res) => {
 
-    getAllUsers(arrayOfModels[0], req, res)
+    getAllUsers(db['User'], req, res)
 
 
 }));
@@ -58,7 +48,7 @@ router.get('/AllUsers', [auth, admin], asyncHandler(async (req, res) => {
  */
 router.post('/login', asyncHandler(async (req, res) => {
 
-    LoginFunc(arrayOfModels[0], req, res)
+    LoginFunc(db['User'], req, res)
 
 }));
 
@@ -68,7 +58,7 @@ router.post('/login', asyncHandler(async (req, res) => {
  */
 router.post('/register', asyncHandler(async (req, res) => {
 
-    registerFunc(arrayOfModels[0], req, res)
+    registerFunc(db['User'], req, res)
 
 }))
 
